@@ -1,89 +1,90 @@
+import java.util.InputMismatchException;
+import java.util.Scanner;
+public class Grille {
 
-/**
- * Décrivez votre classe Grill ici.
- *
- * @author (votre nom)
- * @version (un numéro de version ou une date)
- */
-public class Grille
-{
-    public static final int WIDTH= 8 ; 
-    public static final int HEIGHT= 8 ; 
-    public static final int BLACK = 1 ;
-    public static final int WHITE = 2 ;
-    public static final int NONE = 0 ;
-    
-    private static int [][] grille_jeu ; // Game_Table
-    private int [][] grille_calcule ; // result
-    
+  public static final int WIDTH = 8; 
+  public static final int HEIGHT = 8;
+  public static final int BLACK = 1 ;
+  public static final int WHITE = 2 ;
+  public static final int NONE = 0;
 
+  public static final int PLAYABLE = 5; // مجال للعب
 
-    public Grille()
-    {
-           
+  int numberOfFreeTiles; // عدد البلاطات التي يمكن اللعب فيها
+
+  int[][] table = new int[HEIGHT][WIDTH];
+
+  public static void main(String[] args) {
+    Grille grille = new Grille();
+    grille.createTable();
+    grille.print();
+
+    Player playerWhite = new Player(WHITE, "White");
+    Player playerBlack = new Player(BLACK, "Black");
+
+    Player[] players = {playerBlack, playerWhite};
+    Scanner s = new Scanner(System.in);
+    grille.play(s, players, grille);
+  }
+
+  boolean play(Scanner s, Player[] players, Grille grille) {
+    int turn = 0;
+    while (numberOfFreeTiles != 0) {
+      output("Player " + players[turn].name + "'s turn.");
+      Player player = players[turn];
+      try {
+        int x = s.nextInt();
+        int y = s.nextInt();
+        if (table[x - 1][y - 1] == NONE) {
+          table[x - 1][y - 1] = player.color;
+        } else {
+          output("Tile already taken, choose another.");
+          continue;
         }
-    
-    public static void main(String[]args){
-    
-    Grille j = new Grille();
-    j.CreateGrille_jeu();
-    affichage(grille_jeu);
-    }    
-        
-        
-    /**
-     * la grille de jeu
-     */
-    public  void CreateGrille_jeu(){ // create_table
-    grille_jeu = new int [HEIGHT][WIDTH];
-        for(int i = 0 ; i < HEIGHT ; i++ ){
-            for(int j = 0 ; j < WIDTH; j++){
-                // inisalsier toute les case à vide
-                grille_jeu[i][j] = NONE ;
-            }
-        }
-        // insialiser les case de milieu comme demander 
-        grille_jeu[3][3] = BLACK; 
-        grille_jeu[3][4] = WHITE;
-        grille_jeu[4][3] = WHITE;
-        grille_jeu[4][4] = BLACK;
+      } catch (InputMismatchException e) {
+        output("Input can't be string");
+        continue;
+      } catch (ArrayIndexOutOfBoundsException i) {
+        output("Directions out of board");
+        continue;
+      }
+      turn++;
+      if (turn > 1)
+        turn = 0;
+      grille.print();
+    }
+    return false;
+  }
+
+  void output(String string) {
+    System.out.println(string);
+  }
+
+  void createTable() {
+    for (int i = 0; i < HEIGHT; i++) {
+
+      int[] row = table[i];
+
+      for (int j = 0; j < WIDTH; j++) {
+        row[j] = NONE;
+      }
 
     }
-    
-    /**
-     * la grille où on fait le calcule pour le IA
-     */
-    public void CreateGrille_calcule(){ // counting blacks/whites tiles
-    grille_jeu = new int [HEIGHT][WIDTH];
-        for(int i = 0 ; i < HEIGHT ; i++ ){
-            for(int j = 0 ; j < WIDTH; j++){
-                grille_jeu[i][j] = NONE ;
-            }
-        }
+    // start
+    table[3][3] = BLACK; 
+    table[3][4] = WHITE;
+    table[4][3] = WHITE;
+    table[4][4] = BLACK;
+  }
 
-        grille_jeu[3][3] = BLACK; 
-        grille_jeu[3][4] = WHITE;
-        grille_jeu[4][3] = WHITE;
-        grille_jeu[4][4] = BLACK;
-
+  void print() {
+    for (int i = 0; i < HEIGHT; i++) { // print table
+      int[] row = table[i];
+      System.out.println();
+      for (int j = 0; j < WIDTH; j++) {
+        System.out.print(row[j] + "  ");        
+      }
     }
-    
-    /**
-     * on affiche l'arene
-     */
-     public static void affichage(int arene[][]) {
-        for (int i = 0; i < arene.length; i++) {
-            for (int j = 0; j < arene.length; j++) {
-                if (i == 0 && j == 0) System.out.print("   ");
-                else if (i == 0 && j < 10) System.out.print(j + "  ");
-                else if (i == 0 && j > 9) System.out.print(j + " ");
-                else if (j == 0 && i > 0) {
-                    if (i < 10) System.out.print(i + "  ");
-                    else if (i > 9) System.out.print(i + " ");
-                } else if (j < 11) System.out.print(arene[i][j] + "  ");
-                else if (j > 9) System.out.print(arene[i][j] + "  ");
-            }
-            System.out.println();
-        }
-    }
+    System.out.println(); // more space
+  }
 }
