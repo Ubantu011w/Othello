@@ -1,3 +1,5 @@
+# Ongoing..
+
 # TODO theory
 - Algorithm to search where to fill/change color of tiles.
 - Algorithm to where to play. (graphs linked list).
